@@ -1,0 +1,14 @@
+{
+    "name": "Silvers.CsharpProjectTools.Editor.Test",
+    "references": [
+        "Silvers.CsharpProjectTools.Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

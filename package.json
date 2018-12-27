@@ -1,0 +1,10 @@
+{
+  "name": "tech.silvers.csharpprojecttools",
+  "displayName": "Silver's C# Project Tools",
+  "version": "0.1.0",
+  "unity": "2018.1",
+  "description": "This package makes C# project file generation more consistent and allows to add StyleCop analyzer. Visual Studio is required for this package.",
+  "keywords": ["Project File", "StyleCop", "Visual Studio"],
+  "category": "Utilities",
+  "dependencies": {}
+}
