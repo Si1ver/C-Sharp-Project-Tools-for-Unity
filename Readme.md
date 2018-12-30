@@ -6,6 +6,8 @@ Also it allows you to add StyleCop analyzers to project files.
 
 This tool currently works only on Windows.
 
+At this point the project tested only with Unity 2018.2 and Visual Studio 2017 (v. 15.9).
+
 Project generation hook is based on functionality provided by Visual Studio Unity Bridge. Visual Studio must be installed with "Game development with Unity" payload.
 
 ## Preview version notice
