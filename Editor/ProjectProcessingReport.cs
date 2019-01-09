@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 // See the License.md file in the project root for full license information.
 
-#if ENABLE_VSTU
 namespace Silvers.CsharpProjectTools
 {
     using System;
@@ -18,4 +17,3 @@ namespace Silvers.CsharpProjectTools
         public Exception Exception { get; set; }
     }
 }
-#endif
