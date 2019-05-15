@@ -12,6 +12,8 @@ namespace Silvers.CsharpProjectTools
 
         public string AssemblyDirectory { get; set; }
 
+        public ProjectProcessingResult ProcessingResult { get; set; }
+
         public long ExecutionTimeMs { get; set; }
 
         public Exception Exception { get; set; }

@@ -4,10 +4,55 @@
 
 namespace Silvers.CsharpProjectTools
 {
+    using System.IO;
     using JetBrains.Annotations;
+    using UnityEngine;
 
     public static class UnityPathUtilities
     {
+        [NotNull]
+        public static readonly string UnityProjectRootDirectory;
+
+        [NotNull]
+        public static readonly string UnityLibraryDirectory;
+
+        [NotNull]
+        public static readonly string UnityAssetsDirectory;
+
+        [NotNull]
+        public static readonly string UnityPackagesDirectory;
+
+        [NotNull]
+        public static readonly string UnityProjectSettingsDirectory;
+
+        [NotNull]
+        public static readonly string UnityTempDirectory;
+
+        static UnityPathUtilities()
+        {
+            UnityProjectRootDirectory = GetProjectRootDirectory();
+
+            UnityAssetsDirectory = Path.Combine(UnityProjectRootDirectory, "Assets");
+
+            UnityLibraryDirectory = Path.Combine(UnityProjectRootDirectory, "Library");
+
+            UnityPackagesDirectory = Path.Combine(UnityProjectRootDirectory, "Packages");
+
+            UnityProjectSettingsDirectory = Path.Combine(UnityProjectRootDirectory, "ProjectSettings");
+
+            UnityTempDirectory = Path.Combine(UnityProjectRootDirectory, "Temp");
+        }
+
+        [NotNull]
+        private static string GetProjectRootDirectory()
+        {
+            string normalizedAssetsDirectory = PathUtilities.NormalizeSlashesInPath(Application.dataPath);
+
+            string assetsDirectory = PathUtilities.RemoveTrailingSlashIfPresent(normalizedAssetsDirectory);
+
+            return Path.GetDirectoryName(assetsDirectory) ?? string.Empty;
+        }
+
         [NotNull]
         public static string NormalizeSlashesInPath([NotNull] string path)
         {

@@ -6,11 +6,14 @@ namespace Silvers.CsharpProjectTools
 {
     using System;
     using System.Collections.Generic;
+    using System.Xml;
     using System.Xml.Linq;
     using JetBrains.Annotations;
 
     internal sealed class ProjectFileModifier
     {
+        private const string ProcessedDocumentCommentText = "Document is processed by Silver's C# Project Tools.";
+
         private XDocument projectFileDocument;
 
         private List<XElement> compiles;
@@ -26,7 +29,28 @@ namespace Silvers.CsharpProjectTools
             Verify.ArgumentNotNull(projectFileContent, nameof(projectFileContent));
 
             projectFileDocument = XDocument.Parse(projectFileContent);
+        }
 
+        public bool IsAlreadyProcessed()
+        {
+            foreach (XNode node in projectFileDocument.Nodes())
+            {
+                if (node.NodeType == XmlNodeType.Comment)
+                {
+                    string commentText = ((XComment)node).Value;
+
+                    if (string.Equals(commentText, ProcessedDocumentCommentText, StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public void Parse()
+        {
             CleanupProject(projectFileDocument.Root);
 
             ParseProject();
@@ -50,6 +74,9 @@ namespace Silvers.CsharpProjectTools
             AddItemGroupIfNotEmpty(projectRoot, analyzers);
             AddItemGroupIfNotEmpty(projectRoot, additionalFiles);
             AddItemGroupIfNotEmpty(projectRoot, otherElements);
+
+            var documentProcessedComment = new XComment(ProcessedDocumentCommentText);
+            projectRoot.AddBeforeSelf(documentProcessedComment);
         }
 
         public string GetContent()

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Anton Vasiliev. All rights reserved.
+// Copyright (c) Anton Vasiliev. All rights reserved.
 // Licensed under the MIT license.
 // See the License.md file in the project root for full license information.
 
@@ -6,11 +6,10 @@ namespace Silvers.CsharpProjectTools
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Text;
     using JetBrains.Annotations;
-    using UnityEditor;
     using UnityEditor.Compilation;
-    using UnityEngine;
 
     public static class ProjectFileProcessor
     {
@@ -28,47 +27,64 @@ namespace Silvers.CsharpProjectTools
 
         private const string StylecopJsonFilePath = @"stylecop.json";
 
-        public static string ProcessProjectFile(string path, string content)
+        public static (bool, string) ProcessProjectFile(string path, string content)
         {
             string modifiedContent;
 
-            CsharpProjectToolsSettings settings = CsharpProjectToolsSettings.Load;
+            CsharpProjectToolsSettings settings = CsharpProjectToolsSettings.Load();
 
             var executionStopwatch = new Stopwatch();
             executionStopwatch.Start();
 
-            var report = new ProjectProcessingReport();
-            report.ProjectFilePath = path;
+            var report = new ProjectProcessingReport
+            {
+                ProjectFilePath = path
+            };
 
             try
             {
                 string assemblyDirectory = GetAssemblyDirectoryFromProjectFile(path);
                 report.AssemblyDirectory = assemblyDirectory;
 
-                string styleCopFilePath = UnityPathUtilities.Combine(assemblyDirectory, "stylecop.json");
-                TextAsset styleCopFileAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(styleCopFilePath);
+                string normalizedAssemblyDirectory = PathUtilities.NormalizeSlashesInPath(assemblyDirectory);
+
+                string fullStyleCopFilePath = Path.Combine(UnityPathUtilities.UnityAssetsDirectory, normalizedAssemblyDirectory, StylecopJsonFilePath);
 
                 var projectFileModifier = new ProjectFileModifier(content);
 
-                if (settings.AddStyleCop)
+                if (projectFileModifier.IsAlreadyProcessed())
                 {
-                    if (styleCopFileAsset != null)
-                    {
-                        AddStyleCopPackage(projectFileModifier, assemblyDirectory);
-                    }
-                    else
-                    {
-                        AddRemoveAnalyzersTask(projectFileModifier);
-                    }
+                    report.ProcessingResult = ProjectProcessingResult.AlreadyWasProcessed;
+
+                    modifiedContent = content;
                 }
+                else
+                {
+                    projectFileModifier.Parse();
 
-                projectFileModifier.Compose();
+                    if (!settings.DisableAddStyleCopAnalyzer)
+                    {
+                        if (File.Exists(fullStyleCopFilePath))
+                        {
+                            AddStyleCopPackage(projectFileModifier, assemblyDirectory);
+                        }
+                        else
+                        {
+                            AddRemoveAnalyzersTask(projectFileModifier);
+                        }
+                    }
 
-                modifiedContent = projectFileModifier.GetContent();
+                    projectFileModifier.Compose();
+
+                    modifiedContent = projectFileModifier.GetContent();
+
+                    report.ProcessingResult = ProjectProcessingResult.SuccessfullyProcessed;
+                }
             }
             catch (SystemException exception)
             {
                 report.Exception = exception;
+                report.ProcessingResult = ProjectProcessingResult.ProcessingFailed;
 
                 modifiedContent = content;
             }
@@ -76,12 +92,12 @@ namespace Silvers.CsharpProjectTools
             executionStopwatch.Stop();
             report.ExecutionTimeMs = executionStopwatch.ElapsedMilliseconds;
 
-            if (settings.VerboseLogging || report.Exception != null)
+            if (settings.EnableVerboseLogging || report.Exception != null)
             {
                 PrintReport(report);
             }
 
-            return modifiedContent;
+            return (report.ProcessingResult == ProjectProcessingResult.SuccessfullyProcessed, modifiedContent);
         }
 
         private static void PrintReport([NotNull] ProjectProcessingReport report)
@@ -90,20 +106,31 @@ namespace Silvers.CsharpProjectTools
 
             var builder = new StringBuilder();
 
-            if (report.Exception != null)
+            switch (report.ProcessingResult)
             {
-                builder.AppendLine($"Failed to process project file {report.ProjectFilePath} in {report.ExecutionTimeMs} ms.");
-                builder.AppendLine($"Exception: {report.Exception.Message}.");
-                builder.AppendLine($"Stack trace: {report.Exception.StackTrace}.");
+                case ProjectProcessingResult.SuccessfullyProcessed:
+                    builder.AppendLine($"Processed project file {report.ProjectFilePath} in {report.ExecutionTimeMs} ms.");
+                    builder.AppendLine($"Assembly directory: {report.AssemblyDirectory}");
 
-                UnityEngine.Debug.LogError(builder.ToString());
-            }
-            else
-            {
-                builder.AppendLine($"Processed project file {report.ProjectFilePath} in {report.ExecutionTimeMs} ms.");
-                builder.AppendLine($"Assembly directory: {report.AssemblyDirectory}");
+                    UnityEngine.Debug.Log(builder.ToString());
+                    break;
 
-                UnityEngine.Debug.Log(builder.ToString());
+                case ProjectProcessingResult.AlreadyWasProcessed:
+                    builder.AppendLine($"Project file {report.ProjectFilePath} already processed. Checking took {report.ExecutionTimeMs} ms.");
+                    builder.AppendLine($"Assembly directory: {report.AssemblyDirectory}");
+
+                    UnityEngine.Debug.Log(builder.ToString());
+
+                    break;
+
+                case ProjectProcessingResult.ProcessingFailed:
+                    builder.AppendLine($"Failed to process project file {report.ProjectFilePath} in {report.ExecutionTimeMs} ms.");
+                    builder.AppendLine($"Exception: {report.Exception.Message}.");
+                    builder.AppendLine($"Stack trace: {report.Exception.StackTrace}.");
+
+                    UnityEngine.Debug.LogError(builder.ToString());
+
+                    break;
             }
         }
 

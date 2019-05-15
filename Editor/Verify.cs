@@ -9,8 +9,8 @@ namespace Silvers.CsharpProjectTools
 
     public static class Verify
     {
-        [Pure]
-        public static void ArgumentNotNull<T>([NotNull, NoEnumeration] T parameter, [NotNull] string parameterName)
+        public static void ArgumentNotNull<T>([CanBeNull][NoEnumeration] T parameter, [InvokerParameterName][NotNull] string parameterName)
+            where T : class
         {
             if (parameter == null)
             {
