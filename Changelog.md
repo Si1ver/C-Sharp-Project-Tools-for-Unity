@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Settings are now stored in json format in project settings.
-- Stylecop.Analyzers package version updated to 1.1.118.
+- StyleCop.Analyzers package version updated to 1.1.118.
 
 ## [0.1.1] - 2019-01-09
 ### Fixed
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2018-12-31
 ### Added
-- Added support to add StyleCop.Analyzers package to project when assemply contains `stylecop.json` file in root directory.
+- Added support to add StyleCop.Analyzers package to project when assembly contains `stylecop.json` file in root directory.
 - Added support to cleanup `.csproj` files.
 
 [Unreleased]: https://github.com/Si1ver/C-Sharp-Project-Tools-for-Unity/compare/v0.1.1...HEAD
