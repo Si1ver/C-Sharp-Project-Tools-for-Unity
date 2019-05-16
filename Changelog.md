@@ -20,3 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added support to add StyleCop.Analyzers package to project when assemply contains `stylecop.json` file in root directory.
 - Added support to cleanup `.csproj` files.
+
+[Unreleased]: https://github.com/Si1ver/C-Sharp-Project-Tools-for-Unity/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Si1ver/C-Sharp-Project-Tools-for-Unity/releases/tag/v0.1.1
+[0.1.0]: https://github.com/Si1ver/C-Sharp-Project-Tools-for-Unity/releases/tag/v0.1.0
