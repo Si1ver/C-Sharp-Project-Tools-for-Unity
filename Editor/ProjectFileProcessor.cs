@@ -18,9 +18,7 @@ namespace Silvers.CsharpProjectTools
         private const string TestScriptFileName = "TestScript.cs";
 
         private const string StyleCopAnalyzersPackageName = "StyleCop.Analyzers";
-        private const string StyleCopAnalyzersPackageVersion = "1.1.1-beta.61";
-        private const string StyleCopAnalyzersUnstablePackageName = "StyleCop.Analyzers.Unstable";
-        private const string StyleCopAnalyzersUnstablePackageVersion = "1.1.1.61";
+        private const string StyleCopAnalyzersPackageVersion = "1.1.118";
 
         private const string StyleCopAlanyzersIncludeAssets = "runtime; build; native; contentfiles; analyzers";
         private const string StyleCopAlanyzersPrivateAssets = "all";
@@ -48,7 +46,9 @@ namespace Silvers.CsharpProjectTools
 
                 string normalizedAssemblyDirectory = PathUtilities.NormalizeSlashesInPath(assemblyDirectory);
 
-                string fullStyleCopFilePath = Path.Combine(UnityPathUtilities.UnityAssetsDirectory, normalizedAssemblyDirectory, StylecopJsonFilePath);
+                string fullStyleCopFilePath = Path.Combine(UnityPathUtilities.UnityProjectRootDirectory, normalizedAssemblyDirectory, StylecopJsonFilePath);
+
+                UnityEngine.Debug.Log(fullStyleCopFilePath);
 
                 var projectFileModifier = new ProjectFileModifier(content);
 
@@ -142,7 +142,6 @@ namespace Silvers.CsharpProjectTools
             string styleCopFilePath = UnityPathUtilities.Combine(assemblyDefinitionDirectory, StylecopJsonFilePath);
 
             projectFileModifier.AddPackageReferenceProjectItem(StyleCopAnalyzersPackageName, StyleCopAnalyzersPackageVersion, StyleCopAlanyzersIncludeAssets, StyleCopAlanyzersPrivateAssets);
-            projectFileModifier.AddPackageReferenceProjectItem(StyleCopAnalyzersUnstablePackageName, StyleCopAnalyzersUnstablePackageVersion, StyleCopAlanyzersIncludeAssets, StyleCopAlanyzersPrivateAssets);
 
             projectFileModifier.AddAdditionalFileProjectItem(styleCopFilePath);
         }
