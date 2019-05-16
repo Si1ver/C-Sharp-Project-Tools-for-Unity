@@ -11,13 +11,13 @@ namespace Silvers.CsharpProjectTools
     [Serializable]
     public class CsharpProjectToolsSettings
     {
-        private const string SettingsFileName = @"CsharpProjectToolsSettings.json";
-
         public bool DisableCleanupProject;
 
         public bool DisableAddStyleCopAnalyzer;
 
         public bool EnableVerboseLogging;
+
+        private const string SettingsFileName = @"CsharpProjectToolsSettings.json";
 
         public static CsharpProjectToolsSettings Load()
         {

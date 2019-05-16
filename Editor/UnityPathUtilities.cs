@@ -44,16 +44,6 @@ namespace Silvers.CsharpProjectTools
         }
 
         [NotNull]
-        private static string GetProjectRootDirectory()
-        {
-            string normalizedAssetsDirectory = PathUtilities.NormalizeSlashesInPath(Application.dataPath);
-
-            string assetsDirectory = PathUtilities.RemoveTrailingSlashIfPresent(normalizedAssetsDirectory);
-
-            return Path.GetDirectoryName(assetsDirectory) ?? string.Empty;
-        }
-
-        [NotNull]
         public static string NormalizeSlashesInPath([NotNull] string path)
         {
             Verify.ArgumentNotNull(path, nameof(path));
@@ -163,6 +153,16 @@ namespace Silvers.CsharpProjectTools
                     return normalizedPath.Substring(normalizedPath.Length - nameLength, nameWithoutExtensionLength);
                 }
             }
+        }
+
+        [NotNull]
+        private static string GetProjectRootDirectory()
+        {
+            string normalizedAssetsDirectory = PathUtilities.NormalizeSlashesInPath(Application.dataPath);
+
+            string assetsDirectory = PathUtilities.RemoveTrailingSlashIfPresent(normalizedAssetsDirectory);
+
+            return Path.GetDirectoryName(assetsDirectory) ?? string.Empty;
         }
 
         private static int GetFileNameLength([NotNull] string normalizedPath)

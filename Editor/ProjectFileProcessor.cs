@@ -36,7 +36,7 @@ namespace Silvers.CsharpProjectTools
 
             var report = new ProjectProcessingReport
             {
-                ProjectFilePath = path
+                ProjectFilePath = path,
             };
 
             try
